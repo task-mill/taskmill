@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Taskmill</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -337,10 +338,18 @@ function navigateBack(toIndex) {
 
 function renderContent() {
   var current = navStack[navStack.length - 1]
+  // Use a fresh container to avoid LOSOS cache conflicts on re-render
+  var fresh = document.createElement('div')
   content.innerHTML = ''
+  content.appendChild(fresh)
   var pane = panes[current.pane]
   if (pane && pane.render) {
-    pane.render(null, null, content, current.context)
+    try {
+      pane.render(null, null, fresh, current.context)
+    } catch (err) {
+      console.warn('[render] pane failed:', current.pane, err)
+      fresh.innerHTML = '<div class="empty">Render error — try refreshing</div>'
+    }
   }
 }
 
@@ -376,6 +385,7 @@ window.__loadData = loadData
 window.__setDB = function(path) {
   DB = path
   localStorage.setItem('taskmill-db', path)
+  if (LIVE) connectWS()
 }
 window.__getDB = function() { return DB }
 window.__isLive = function() { return LIVE }
@@ -394,17 +404,23 @@ document.querySelectorAll('.sb-item').forEach(function(el) {
 navigate('dashboard', 'Dashboard')
 
 // ---- live sync via WebSocket ----
+var _ws = null
 function connectWS() {
-  var ws = new WebSocket((location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + location.host + '/.notifications')
-  ws.onopen = function() { ws.send('sub ' + location.origin + '/db/taskmill/') }
-  ws.onmessage = async function(e) {
+  if (_ws) { _ws.onclose = null; _ws.close() }
+  _ws = new WebSocket((location.protocol === 'https:' ? 'wss:' : 'ws:') + '//' + location.host + '/.notifications')
+  _ws.onopen = function() { _ws.send('sub ' + location.origin + DB + '/') }
+  _ws.onmessage = async function(e) {
     if (e.data.startsWith('pub ')) {
-      await loadData()
-      updateSidebarCounts()
-      renderContent()
+      try {
+        await loadData()
+        updateSidebarCounts()
+        renderContent()
+      } catch (err) {
+        console.warn('[ws] reload failed:', err)
+      }
     }
   }
-  ws.onclose = function() { setTimeout(connectWS, 3000) }
+  _ws.onclose = function() { setTimeout(connectWS, 3000) }
 }
 
 function updateSidebarCounts() {

@@ -26,7 +26,7 @@ export default {
       var cls = { in_progress: 'badge-blue', done: 'badge-green', completed: 'badge-green',
                   todo: 'badge-gray', cancelled: 'badge-gray', active: 'badge-green',
                   planned: 'badge-gray', paused: 'badge-yellow', archived: 'badge-gray' }
-      return '<span class="badge ' + (cls[status] || 'badge-gray') + '">' + status.replace(/_/g, ' ') + '</span>'
+      return '<span class="badge ' + (cls[status] || 'badge-gray') + '">' + (status || '—').replace(/_/g, ' ') + '</span>'
     }
 
     async function deleteProject() {

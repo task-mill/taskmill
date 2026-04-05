@@ -25,7 +25,7 @@ export default {
     function statusBadge(status) {
       var cls = { in_progress: 'badge-blue', active: 'badge-green', completed: 'badge-green',
                   paused: 'badge-yellow', archived: 'badge-gray', planned: 'badge-gray' }
-      return '<span class="badge ' + (cls[status] || 'badge-gray') + '">' + status.replace(/_/g, ' ') + '</span>'
+      return '<span class="badge ' + (cls[status] || 'badge-gray') + '">' + (status || '—').replace(/_/g, ' ') + '</span>'
     }
 
     function showCreateModal() {

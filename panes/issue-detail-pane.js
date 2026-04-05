@@ -28,7 +28,7 @@ export default {
     function statusBadge(status) {
       var cls = { in_progress: 'badge-blue', done: 'badge-green', completed: 'badge-green',
                   todo: 'badge-gray', cancelled: 'badge-gray', backlog: 'badge-gray' }
-      return '<span class="badge ' + (cls[status] || 'badge-gray') + '">' + status.replace(/_/g, ' ') + '</span>'
+      return '<span class="badge ' + (cls[status] || 'badge-gray') + '">' + (status || '—').replace(/_/g, ' ') + '</span>'
     }
 
     function priorityBadge(p) {

@@ -196,7 +196,7 @@ export default {
                   return html`<div class="row clickable" onclick="${function() { nav('projectDetail', p.name, { projectId: p.id }) }}" style="padding: 6px 0; border-bottom: 1px solid var(--border)">
                     <div style="${'width: 3px; height: 16px; border-radius: 1px; background:' + (p.color || 'var(--accent)')}" ></div>
                     <span class="text-sm">${p.name}</span>
-                    <span class="text-xs text-muted">· ${p.status.replace(/_/g, ' ')}</span>
+                    <span class="text-xs text-muted">· ${(p.status || '—').replace(/_/g, ' ')}</span>
                   </div>`
                 })}
               </div>` : ''}

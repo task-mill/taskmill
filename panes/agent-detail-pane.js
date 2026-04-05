@@ -30,7 +30,7 @@ export default {
       var cls = { idle: 'badge-gray', running: 'badge-green', active: 'badge-green',
                   error: 'badge-red', paused: 'badge-yellow', in_progress: 'badge-blue',
                   done: 'badge-green', completed: 'badge-green', todo: 'badge-gray' }
-      return '<span class="badge ' + (cls[status] || 'badge-gray') + '">' + status.replace(/_/g, ' ') + '</span>'
+      return '<span class="badge ' + (cls[status] || 'badge-gray') + '">' + (status || '—').replace(/_/g, ' ') + '</span>'
     }
 
     function actionIcon(action) {

@@ -36,7 +36,7 @@ export default {
     function statusBadge(status) {
       var cls = { in_progress: 'badge-blue', done: 'badge-green', completed: 'badge-green',
                   cancelled: 'badge-gray', backlog: 'badge-gray', todo: 'badge-gray' }
-      return '<span class="badge ' + (cls[status] || 'badge-gray') + '">' + status.replace(/_/g, ' ') + '</span>'
+      return '<span class="badge ' + (cls[status] || 'badge-gray') + '">' + (status || '—').replace(/_/g, ' ') + '</span>'
     }
 
     function nextIdentifier() {

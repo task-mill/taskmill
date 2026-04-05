@@ -31,7 +31,7 @@ export default {
       var cls = { idle: 'badge-gray', running: 'badge-green', active: 'badge-green',
                   error: 'badge-red', paused: 'badge-yellow', in_progress: 'badge-blue',
                   done: 'badge-green', completed: 'badge-green' }
-      return '<span class="badge ' + (cls[status] || 'badge-gray') + '">' + status.replace(/_/g, ' ') + '</span>'
+      return '<span class="badge ' + (cls[status] || 'badge-gray') + '">' + (status || '—').replace(/_/g, ' ') + '</span>'
     }
 
     var recentIssues = issues.slice(0, 5)
