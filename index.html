@@ -231,7 +231,7 @@
     <div class="sb-footer">Taskmill v0.0.1 · LOSOS</div>
   </nav>
   <div id="main">
-    <div id="topbar"><button id="hamburger">☰</button><div id="breadcrumbs"></div></div>
+    <div id="topbar"><button id="hamburger">☰</button><div id="breadcrumbs"></div><button id="sound-toggle" title="Enable notification sounds" style="background:none;border:none;font-size:16px;cursor:pointer;padding:8px 16px;color:var(--fg3)">🔇</button></div>
     <div id="content"></div>
     <div id="toasts"></div>
   </div>
@@ -445,11 +445,41 @@ function updateSidebarCounts() {
   document.getElementById('sb-projects-count').textContent = d.projects.length
 }
 
+var _audioCtx = null
+var _soundEnabled = false
+
+document.getElementById('sound-toggle').addEventListener('click', function() {
+  _soundEnabled = !_soundEnabled
+  if (_soundEnabled && !_audioCtx) {
+    _audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+  }
+  this.textContent = _soundEnabled ? '🔊' : '🔇'
+  this.title = _soundEnabled ? 'Mute notifications' : 'Enable notification sounds'
+  if (_soundEnabled) playNotificationSound()
+})
+
+function playNotificationSound() {
+  if (!_soundEnabled || !_audioCtx) return
+  try {
+    var osc = _audioCtx.createOscillator()
+    var gain = _audioCtx.createGain()
+    osc.connect(gain)
+    gain.connect(_audioCtx.destination)
+    osc.frequency.setValueAtTime(880, _audioCtx.currentTime)
+    osc.frequency.setValueAtTime(1047, _audioCtx.currentTime + 0.08)
+    gain.gain.setValueAtTime(0.15, _audioCtx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, _audioCtx.currentTime + 0.25)
+    osc.start(_audioCtx.currentTime)
+    osc.stop(_audioCtx.currentTime + 0.25)
+  } catch (e) {}
+}
+
 function showToast(icon, message) {
   var el = document.createElement('div')
   el.className = 'toast'
   el.innerHTML = '<span class="toast-icon">' + icon + '</span>' + message
   document.getElementById('toasts').appendChild(el)
+  playNotificationSound()
   setTimeout(function() { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; setTimeout(function() { el.remove() }, 300) }, 4000)
 }
 
