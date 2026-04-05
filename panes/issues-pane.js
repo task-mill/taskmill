@@ -158,7 +158,7 @@ export default {
 
         <div class="card">
           <table>
-            <thead>
+            
               <tr>
                 <th style="width: 50px"></th>
                 <th>Issue</th>
@@ -167,8 +167,8 @@ export default {
                 <th>Status</th>
                 <th>Updated</th>
               </tr>
-            </thead>
-            <tbody>
+            
+            
               ${filtered.map(function(i) {
                 return html`<tr class="clickable" onclick="${function() { nav('issueDetail', i.identifier, { issueId: i.id }) }}">
                   <td class="text-sm">${i.priority === 'high' || i.priority === 'urgent' ? '🔴' : i.priority === 'medium' ? '🟡' : '⚪'}</td>
@@ -183,7 +183,7 @@ export default {
                 </tr>`
               })}
               ${filtered.length === 0 ? html`<tr><td colspan="6" class="text-muted" style="text-align:center; padding:24px">No issues</td></tr>` : ''}
-            </tbody>
+            
           </table>
         </div>
       `)

@@ -177,8 +177,8 @@ export default {
         <h2>Issues (${issues.length})</h2>
         <div class="card">
           <table>
-            <thead><tr><th></th><th>Issue</th><th>Assignee</th><th>Status</th><th>Updated</th></tr></thead>
-            <tbody>
+            <tr><th></th><th>Issue</th><th>Assignee</th><th>Status</th><th>Updated</th></tr>
+            
               ${issues.map(function(i) {
                 var a = i.assigneeAgentId ? agents.find(function(x) { return x.id === i.assigneeAgentId }) : null
                 return html`<tr class="clickable" onclick="${function() { nav('issueDetail', i.identifier, { issueId: i.id }) }}">
@@ -190,7 +190,7 @@ export default {
                 </tr>`
               })}
               ${issues.length === 0 ? html`<tr><td colspan="5" class="text-muted" style="text-align: center; padding: 16px">No issues</td></tr>` : ''}
-            </tbody>
+            
           </table>
         </div>
       `)

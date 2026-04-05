@@ -72,20 +72,18 @@ export default {
           <h2>Agents</h2>
           <div class="card">
             <table>
-              <thead><tr><th>Agent</th><th>Role</th><th>Status</th></tr></thead>
-              <tbody>
-                ${agents.map(function(a) {
-                  return html`<tr class="clickable" onclick="${function() { nav('agentDetail', a.name, { agentId: a.id }) }}">
-                    <td class="row">
-                      <span class="icon-circle">${a.icon || a.name.charAt(0)}</span>
-                      <span>${a.name}</span>
-                    </td>
-                    <td class="text-muted text-sm">${a.role || '—'}</td>
-                    <td innerHTML="${statusBadge(a.status)}"></td>
-                  </tr>`
-                })}
-                ${agents.length === 0 ? html`<tr><td colspan="3" class="text-muted">No agents yet</td></tr>` : ''}
-              </tbody>
+              <tr><th>Agent</th><th>Role</th><th>Status</th></tr>
+              ${agents.map(function(a) {
+                return html`<tr class="clickable" onclick="${function() { nav('agentDetail', a.name, { agentId: a.id }) }}">
+                  <td class="row">
+                    <span class="icon-circle">${a.icon || a.name.charAt(0)}</span>
+                    <span>${a.name}</span>
+                  </td>
+                  <td class="text-muted text-sm">${a.role || '—'}</td>
+                  <td innerHTML="${statusBadge(a.status)}"></td>
+                </tr>`
+              })}
+              ${agents.length === 0 ? html`<tr><td colspan="3" class="text-muted">No agents yet</td></tr>` : ''}
             </table>
           </div>
         </div>
@@ -94,20 +92,18 @@ export default {
           <h2>Recent Issues</h2>
           <div class="card">
             <table>
-              <thead><tr><th>Issue</th><th>Status</th><th>Updated</th></tr></thead>
-              <tbody>
-                ${recentIssues.map(function(i) {
-                  return html`<tr class="clickable" onclick="${function() { nav('issueDetail', i.identifier, { issueId: i.id }) }}">
-                    <td>
-                      <span class="text-muted text-xs">${i.identifier} </span>
-                      <span class="text-sm">${i.title}</span>
-                    </td>
-                    <td innerHTML="${statusBadge(i.status)}"></td>
-                    <td class="text-muted text-xs">${timeAgo(i.updatedAt)}</td>
-                  </tr>`
-                })}
-                ${recentIssues.length === 0 ? html`<tr><td colspan="3" class="text-muted">No issues yet</td></tr>` : ''}
-              </tbody>
+              <tr><th>Issue</th><th>Status</th><th>Updated</th></tr>
+              ${recentIssues.map(function(i) {
+                return html`<tr class="clickable" onclick="${function() { nav('issueDetail', i.identifier, { issueId: i.id }) }}">
+                  <td>
+                    <span class="text-muted text-xs">${i.identifier} </span>
+                    <span class="text-sm">${i.title}</span>
+                  </td>
+                  <td innerHTML="${statusBadge(i.status)}"></td>
+                  <td class="text-muted text-xs">${timeAgo(i.updatedAt)}</td>
+                </tr>`
+              })}
+              ${recentIssues.length === 0 ? html`<tr><td colspan="3" class="text-muted">No issues yet</td></tr>` : ''}
             </table>
           </div>
         </div>

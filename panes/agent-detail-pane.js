@@ -201,8 +201,8 @@ export default {
         <h2>Assigned Issues (${issues.length})</h2>
         <div class="card mb">
           <table>
-            <thead><tr><th>Issue</th><th>Status</th><th>Priority</th><th>Updated</th></tr></thead>
-            <tbody>
+            <tr><th>Issue</th><th>Status</th><th>Priority</th><th>Updated</th></tr>
+            
               ${issues.map(function(i) {
                 return html`<tr class="clickable" onclick="${function() { nav('issueDetail', i.identifier, { issueId: i.id }) }}">
                   <td><span class="text-muted text-xs">${i.identifier} </span><span class="text-sm">${i.title}</span></td>
@@ -212,7 +212,7 @@ export default {
                 </tr>`
               })}
               ${issues.length === 0 ? html`<tr><td colspan="4" class="text-muted" style="text-align: center; padding: 16px">No assigned issues</td></tr>` : ''}
-            </tbody>
+            
           </table>
         </div>
 
