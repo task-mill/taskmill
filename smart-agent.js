@@ -41,7 +41,7 @@ async function askGLM(prompt) {
     body: JSON.stringify({
       model: 'glm-5',
       messages: [
-        { role: 'system', content: 'You are an AI agent working for a company. You receive issues/tasks and provide concise, actionable advice on how to approach them. Keep responses under 200 words.' },
+        { role: 'system', content: 'You are an AI agent working for a company. You receive issues and tasks. If the answer is simple and factual, just answer directly. If the task requires planning, provide concise actionable steps. Match the depth of your response to the complexity of the issue. Keep responses under 200 words.' },
         { role: 'user', content: prompt }
       ]
     })
@@ -76,6 +76,20 @@ async function getIssues() {
   var items = listing.contains || listing['ldp:contains'] || []
   var urls = items.map(function(item) { return typeof item === 'string' ? item : item['@id'] })
   return Promise.all(urls.map(function(url) { return fetchJSON(url) }))
+}
+
+async function getActivity() {
+  var listing = await fetchJSON(API + '/activity/')
+  var items = listing.contains || listing['ldp:contains'] || []
+  var urls = items.map(function(item) { return typeof item === 'string' ? item : item['@id'] })
+  return Promise.all(urls.map(function(url) { return fetchJSON(url) }))
+}
+
+async function alreadyCommented(issueId) {
+  var activity = await getActivity()
+  return activity.some(function(a) {
+    return a.action === 'issue.commented' && a.actorId === AGENT_ID && a.entityId === issueId
+  })
 }
 
 async function logActivity(action, entityType, entityId, details) {
@@ -129,13 +143,19 @@ async function heartbeat() {
     await logActivity('issue.checked_out', 'issue', issue.id)
   }
 
+  // Skip if already commented
+  if (await alreadyCommented(issue.id)) {
+    console.log('[agent] Already commented on ' + (issue.identifier || issue.id) + ' — skipping')
+    return
+  }
+
   // Ask GLM-5 for advice
   console.log('[agent] Thinking about: ' + issue.title)
   var prompt = 'I am working on this issue:\n\n' +
     'Title: ' + issue.title + '\n' +
     (issue.description ? 'Description: ' + issue.description + '\n' : '') +
     'Priority: ' + (issue.priority || 'medium') + '\n\n' +
-    'What are the key steps to complete this task? Be specific and actionable.'
+    'Please help with this issue.'
 
   try {
     var response = await askGLM(prompt)
@@ -153,7 +173,12 @@ async function heartbeat() {
     })
 
     console.log('[agent] ✅ Comment posted on ' + (issue.identifier || issue.id))
-    await logActivity('issue.commented', 'issue', issue.id)
+
+    // Mark issue done
+    issue.status = 'done'
+    issue.updatedAt = new Date().toISOString()
+    await putJSON(API + '/issues/' + issue.id, issue)
+    console.log('[agent] ✅ Issue marked done')
   } catch (err) {
     console.error('[agent] GLM-5 error:', err.message)
   }

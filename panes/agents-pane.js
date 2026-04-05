@@ -127,7 +127,7 @@ export default {
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px">
                 <div>
                   <span class="text-muted">Adapter</span>
-                  <div class="text-fg2">${a.adapterType.replace(/_/g, ' ')}</div>
+                  <div class="text-fg2">${(a.adapterType || '—').replace(/_/g, ' ')}</div>
                 </div>
                 <div>
                   <span class="text-muted">Last heartbeat</span>

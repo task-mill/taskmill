@@ -106,9 +106,29 @@ export default {
       })
     }
 
+    function simpleMd(text) {
+      return text
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/`(.+?)`/g, '<code style="background:var(--bg2);padding:1px 4px;border-radius:3px">$1</code>')
+        .replace(/\n/g, '<br>')
+    }
+
     function renderDetail() {
       assignee = issue.assigneeAgentId ? agents.find(function(a) { return a.id === issue.assigneeAgentId }) : null
       project = issue.projectId ? projects.find(function(p) { return p.id === issue.projectId }) : null
+
+      var comments = (data.activity || []).filter(function(a) {
+        return a.action === 'issue.commented' && a.entityId === issue.id && a.details && a.details.comment
+      }).sort(function(a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt)
+      })
+
+      function agentName(id) {
+        var a = agents.find(function(x) { return x.id === id })
+        return a ? a.name : 'Agent'
+      }
 
       render(container, html`
         <div class="row-between" style="margin-bottom: 8px">
@@ -172,7 +192,31 @@ export default {
             </div>
           </div>
         </div>
+
+        <div class="mb">
+          <h2>Comments (${comments.length})</h2>
+          <div class="card">
+            ${comments.length === 0 ? html`<div class="text-muted text-sm" style="padding: 16px; text-align: center">No comments yet</div>` : ''}
+            ${comments.map(function(c, idx) {
+              return html`<div style="${'padding: 12px 0;' + (idx < comments.length - 1 ? ' border-bottom: 1px solid var(--border)' : '')}">
+                <div class="row-between" style="margin-bottom: 6px">
+                  <div class="row" style="gap: 6px">
+                    <span class="icon-circle" style="width: 22px; height: 22px; font-size: 10px">${agentName(c.actorId).charAt(0)}</span>
+                    <span style="font-weight: 500; font-size: 13px">${agentName(c.actorId)}</span>
+                  </div>
+                  <span class="text-xs text-muted">${timeAgo(c.createdAt)}</span>
+                </div>
+                <div class="md-comment" style="padding: 8px 12px; background: var(--bg2); border-radius: 6px; font-size: 13px; line-height: 1.5">${c.details.comment}</div>
+              </div>`
+            })}
+          </div>
+        </div>
       `)
+
+      // Post-render: apply markdown to comment divs
+      container.querySelectorAll('.md-comment').forEach(function(el) {
+        el.innerHTML = simpleMd(el.textContent)
+      })
     }
 
     renderDetail()

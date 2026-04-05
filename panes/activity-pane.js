@@ -7,7 +7,9 @@ export default {
   render(subject, lionStore, container, context) {
     var data = window.__paperclip
     var nav = window.__nav
-    var activity = data.activity || []
+    var activity = (data.activity || []).slice().sort(function(a, b) {
+      return new Date(b.createdAt) - new Date(a.createdAt)
+    })
     var agents = data.agents || []
 
     function agentName(id) {
@@ -68,6 +70,7 @@ export default {
                     <span>${a.entityType.replace(/_/g, ' ')}</span>
                     ${agentCtx && agentCtx !== actor ? html`<span>· agent: ${agentCtx}</span>` : ''}
                   </div>
+                  ${a.details && a.details.comment ? html`<div style="margin-top: 6px; padding: 8px 12px; background: var(--bg2); border-radius: 6px; font-size: 13px; line-height: 1.5; white-space: pre-wrap">${a.details.comment}</div>` : ''}
                 </div>
               </div>
               <span class="text-xs text-muted">${timeAgo(a.createdAt)}</span>

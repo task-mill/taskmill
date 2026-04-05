@@ -34,7 +34,7 @@ export default {
       return '<span class="badge ' + (cls[status] || 'badge-gray') + '">' + (status || '—').replace(/_/g, ' ') + '</span>'
     }
 
-    var recentIssues = issues.slice(0, 5)
+    var recentIssues = issues
     var recentActivity = (data.activity || []).slice(0, 8)
 
     render(container, html`
@@ -50,12 +50,12 @@ export default {
           <div class="metric-label">${activeAgents ? 'Active' : 'Idle'}</div>
         </div>
         <div class="card metric clickable" onclick="${function() { nav('issues', 'Issues') }}">
-          <div class="metric-value">${openIssues}</div>
-          <div class="metric-label">Open Issues</div>
+          <div class="metric-value">${issues.length}</div>
+          <div class="metric-label">Issues</div>
         </div>
         <div class="card metric">
-          <div class="metric-value">${inProgress}</div>
-          <div class="metric-label">In Progress</div>
+          <div class="metric-value">${openIssues} / ${issues.filter(function(i) { return i.status === 'done' || i.status === 'completed' }).length}</div>
+          <div class="metric-label">Open / Done</div>
         </div>
         <div class="card metric clickable" onclick="${function() { nav('projects', 'Projects') }}">
           <div class="metric-value">${projects.length}</div>
@@ -76,8 +76,8 @@ export default {
               ${agents.map(function(a) {
                 return html`<tr class="clickable" onclick="${function() { nav('agentDetail', a.name, { agentId: a.id }) }}">
                   <td class="row">
-                    <span class="icon-circle">${a.icon || a.name.charAt(0)}</span>
-                    <span>${a.name}</span>
+                    <span class="icon-circle">${a.icon || (a.name || '?').charAt(0)}</span>
+                    <span>${a.name || '—'}</span>
                   </td>
                   <td class="text-muted text-sm">${a.role || '—'}</td>
                   <td innerHTML="${statusBadge(a.status)}"></td>
@@ -89,7 +89,7 @@ export default {
         </div>
 
         <div>
-          <h2>Recent Issues</h2>
+          <h2>Issues</h2>
           <div class="card">
             <table>
               <tr><th>Issue</th><th>Status</th><th>Updated</th></tr>

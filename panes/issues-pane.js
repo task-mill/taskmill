@@ -7,7 +7,9 @@ export default {
   render(subject, lionStore, container, context) {
     var data = window.__paperclip
     var nav = window.__nav
-    var issues = data.issues || []
+    var issues = (data.issues || []).slice().sort(function(a, b) {
+      return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt)
+    })
     var agents = data.agents || []
     var projects = data.projects || []
     var filter = 'all'

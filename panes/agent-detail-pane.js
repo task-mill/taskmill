@@ -126,7 +126,7 @@ export default {
               <div class="row" style="gap: 8px">
                 <span class="text-sm text-muted">${agent.role || '—'}</span>
                 <span innerHTML="${statusBadge(agent.status)}"></span>
-                <span class="badge badge-purple">${agent.adapterType.replace(/_/g, ' ')}</span>
+                <span class="badge badge-purple">${(agent.adapterType || '—').replace(/_/g, ' ')}</span>
               </div>
             </div>
           </div>
