@@ -1,0 +1,15 @@
+{
+  "name": "taskmill",
+  "version": "0.0.1",
+  "description": "Orchestrate AI agents from a lightweight dashboard",
+  "type": "module",
+  "scripts": {
+    "start": "jss start --port 3005 --root . --mongo --mongo-database taskmill --public --notifications",
+    "agent": "node agent.js"
+  },
+  "license": "AGPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/task-mill/taskmill.git"
+  }
+}
