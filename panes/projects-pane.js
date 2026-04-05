@@ -83,7 +83,7 @@ export default {
         btn.textContent = 'Creating...'; btn.disabled = true
 
         try {
-          await fetch('/db/taskmill/projects/' + id, {
+          await fetch(window.__getDB() + '/projects/' + id, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/ld+json' },
             body: JSON.stringify(project)

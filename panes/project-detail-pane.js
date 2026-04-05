@@ -31,7 +31,7 @@ export default {
 
     async function deleteProject() {
       if (!confirm('Delete project ' + project.name + '?')) return
-      await fetch('/db/taskmill/projects/' + project.id, { method: 'DELETE' })
+      await fetch(window.__getDB() + '/projects/' + project.id, { method: 'DELETE' })
       data.projects = data.projects.filter(function(p) { return p.id !== project.id })
       document.getElementById('sb-projects-count').textContent = data.projects.length
       nav('projects', 'Projects')
@@ -81,7 +81,7 @@ export default {
           goals: goal ? [{ id: goal.id, title: goal.title }] : [],
           updatedAt: new Date().toISOString()
         })
-        await fetch('/db/taskmill/projects/' + project.id, {
+        await fetch(window.__getDB() + '/projects/' + project.id, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/ld+json' },
           body: JSON.stringify(project)

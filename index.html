@@ -228,7 +228,7 @@
 
 <script type="module">
 // --- Data layer: try /db/ (MongoDB via JSS), fall back to demo data ---
-var DB = '/db/taskmill'
+var DB = localStorage.getItem('taskmill-db') || '/db/taskmill'
 var LIVE = false
 
 async function fetchCollection(name) {
@@ -372,6 +372,13 @@ function updateSidebar(activePane) {
 
 // Expose navigate globally so panes can use it
 window.__nav = navigate
+window.__loadData = loadData
+window.__setDB = function(path) {
+  DB = path
+  localStorage.setItem('taskmill-db', path)
+}
+window.__getDB = function() { return DB }
+window.__isLive = function() { return LIVE }
 
 // ---- sidebar clicks ----
 document.querySelectorAll('.sb-item').forEach(function(el) {

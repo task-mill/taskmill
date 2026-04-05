@@ -39,7 +39,7 @@ export default {
     async function updateField(field, value) {
       issue[field] = value
       issue.updatedAt = new Date().toISOString()
-      await fetch('/db/taskmill/issues/' + issue.id, {
+      await fetch(window.__getDB() + '/issues/' + issue.id, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/ld+json' },
         body: JSON.stringify(issue)
@@ -49,7 +49,7 @@ export default {
 
     async function deleteIssue() {
       if (!confirm('Delete issue ' + issue.identifier + '?')) return
-      await fetch('/db/taskmill/issues/' + issue.id, { method: 'DELETE' })
+      await fetch(window.__getDB() + '/issues/' + issue.id, { method: 'DELETE' })
       data.issues = data.issues.filter(function(i) { return i.id !== issue.id })
       document.getElementById('sb-issues-count').textContent =
         data.issues.filter(function(i) { return i.status !== 'done' && i.status !== 'completed' }).length
@@ -96,7 +96,7 @@ export default {
         issue.projectId = modal.querySelector('#f-project').value || null
         issue.assigneeAgentId = modal.querySelector('#f-agent').value || null
         issue.updatedAt = new Date().toISOString()
-        await fetch('/db/taskmill/issues/' + issue.id, {
+        await fetch(window.__getDB() + '/issues/' + issue.id, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/ld+json' },
           body: JSON.stringify(issue)

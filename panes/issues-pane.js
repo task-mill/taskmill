@@ -112,7 +112,7 @@ export default {
         btn.disabled = true
 
         try {
-          await fetch('/db/taskmill/issues/' + id, {
+          await fetch(window.__getDB() + '/issues/' + id, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/ld+json' },
             body: JSON.stringify(issue)

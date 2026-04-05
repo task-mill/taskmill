@@ -79,7 +79,7 @@ export default {
         btn.textContent = 'Creating...'; btn.disabled = true
 
         try {
-          await fetch('/db/taskmill/goals/' + id, {
+          await fetch(window.__getDB() + '/goals/' + id, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/ld+json' },
             body: JSON.stringify(goal)
@@ -126,7 +126,7 @@ export default {
           ownerAgentId: modal.querySelector('#f-owner').value || null,
           updatedAt: new Date().toISOString()
         })
-        await fetch('/db/taskmill/goals/' + g.id, {
+        await fetch(window.__getDB() + '/goals/' + g.id, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/ld+json' },
           body: JSON.stringify(g)
@@ -138,7 +138,7 @@ export default {
 
     async function deleteGoal(g) {
       if (!confirm('Delete goal "' + g.title + '"?')) return
-      await fetch('/db/taskmill/goals/' + g.id, { method: 'DELETE' })
+      await fetch(window.__getDB() + '/goals/' + g.id, { method: 'DELETE' })
       data.goals = data.goals.filter(function(x) { return x.id !== g.id })
       goals = data.goals
       renderGoals()

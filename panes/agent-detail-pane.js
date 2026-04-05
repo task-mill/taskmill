@@ -47,7 +47,7 @@ export default {
     async function updateAgent(fields) {
       Object.assign(agent, fields)
       agent.updatedAt = new Date().toISOString()
-      await fetch('/db/taskmill/agents/' + agent.id, {
+      await fetch(window.__getDB() + '/agents/' + agent.id, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/ld+json' },
         body: JSON.stringify(agent)
@@ -57,7 +57,7 @@ export default {
 
     async function deleteAgent() {
       if (!confirm('Delete agent ' + agent.name + '?')) return
-      await fetch('/db/taskmill/agents/' + agent.id, { method: 'DELETE' })
+      await fetch(window.__getDB() + '/agents/' + agent.id, { method: 'DELETE' })
       data.agents = data.agents.filter(function(a) { return a.id !== agent.id })
       document.getElementById('sb-agents-count').textContent = data.agents.length
       nav('agents', 'Agents')
