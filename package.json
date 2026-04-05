@@ -11,5 +11,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/task-mill/taskmill.git"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^9.0.3"
   }
 }

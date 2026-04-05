@@ -134,6 +134,15 @@
     .priority-low { color: var(--fg3); }
     .clickable { cursor: pointer; }
 
+    /* toast */
+    #toasts { position: fixed; bottom: 20px; right: 20px; z-index: 300;
+              display: flex; flex-direction: column-reverse; gap: 8px; pointer-events: none; }
+    .toast { background: var(--fg); color: var(--bg); padding: 12px 20px; border-radius: 10px;
+             font-size: 13px; box-shadow: var(--shadow-md); pointer-events: auto;
+             animation: toast-in 0.3s ease; max-width: 360px; }
+    .toast-icon { margin-right: 8px; }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
     /* mobile */
     #hamburger { display: none; background: none; border: none; font-size: 22px; cursor: pointer;
                  padding: 8px 16px; color: var(--fg); line-height: 1; }
@@ -224,6 +233,7 @@
   <div id="main">
     <div id="topbar"><button id="hamburger">☰</button><div id="breadcrumbs"></div></div>
     <div id="content"></div>
+    <div id="toasts"></div>
   </div>
 </div>
 
@@ -411,10 +421,15 @@ function connectWS() {
   _ws.onopen = function() { _ws.send('sub ' + location.origin + DB + '/') }
   _ws.onmessage = async function(e) {
     if (e.data.startsWith('pub ')) {
+      var pubUrl = e.data.slice(4)
+      var oldData = JSON.stringify(window.__paperclip)
       try {
         await loadData()
         updateSidebarCounts()
         renderContent()
+        // Detect what changed and toast it
+        var newData = JSON.stringify(window.__paperclip)
+        if (oldData !== newData) showChangeToast(pubUrl)
       } catch (err) {
         console.warn('[ws] reload failed:', err)
       }
@@ -428,6 +443,43 @@ function updateSidebarCounts() {
   document.getElementById('sb-agents-count').textContent = d.agents.length
   document.getElementById('sb-issues-count').textContent = d.issues.filter(function(i) { return i.status !== 'done' && i.status !== 'completed' }).length
   document.getElementById('sb-projects-count').textContent = d.projects.length
+}
+
+function showToast(icon, message) {
+  var el = document.createElement('div')
+  el.className = 'toast'
+  el.innerHTML = '<span class="toast-icon">' + icon + '</span>' + message
+  document.getElementById('toasts').appendChild(el)
+  setTimeout(function() { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; setTimeout(function() { el.remove() }, 300) }, 4000)
+}
+
+function showChangeToast(url) {
+  var parts = url.split('/')
+  var type = parts[parts.length - 2] || ''
+  var id = parts[parts.length - 1] || ''
+
+  var icons = { agents: '🤖', issues: '📋', projects: '📁', goals: '🎯', activity: '📡', company: '⚙️' }
+  var icon = icons[type] || '🔔'
+
+  // Try to find the entity name
+  var data = window.__paperclip
+  var name = id
+  if (type === 'agents') {
+    var agent = data.agents.find(function(a) { return a.id === id })
+    if (agent) name = agent.name
+  } else if (type === 'issues') {
+    var issue = data.issues.find(function(i) { return i.id === id })
+    if (issue) name = (issue.identifier || '') + ' ' + (issue.title || '')
+  } else if (type === 'projects') {
+    var project = data.projects.find(function(p) { return p.id === id })
+    if (project) name = project.name
+  } else if (type === 'activity') {
+    var act = data.activity.find(function(a) { return a.id === id })
+    if (act) name = act.action.replace(/\./g, ' → ')
+  }
+
+  if (name.length > 60) name = name.slice(0, 57) + '...'
+  showToast(icon, '<strong>' + type.slice(0, -1) + '</strong> updated: ' + name)
 }
 
 if (LIVE) connectWS()
